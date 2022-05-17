@@ -9,7 +9,7 @@ import TaskList from '../components/TaskList';
 const URL = 'http://localhost:3003/api/tasks'
 
 class Tasks extends React.Component {
-  constructor(props) {
+  constructor() {
     super(props);
      this.state = { description: ' ', list: [], placeholder:'adicionar tarefa' }
   

@@ -1,5 +1,4 @@
 import React from 'react';
-import Tasks from './pages/Tasks';
 import { BrowserRouter as Router,  } from "react-router-dom";
 
 import Menu from './components/Menu';
