@@ -14,58 +14,75 @@ class Tasks extends React.Component {
      this.state = { description: ' ', list: [], placeholder:'adicionar tarefa' }
   
     this.handOnChange = this.handOnChange.bind(this)
+    this.handleSearch = this.handleSearch.bind(this)
     this.handleAdd = this.handleAdd.bind(this)
+    this.handleClear = this.handleClear.bind(this)
+
     this.handleRemove = this.handleRemove.bind(this)
     this.handleMarkAsDone = this.handleMarkAsDone.bind(this)
+    this.handleMarkAsPending = this.handleMarkAsPending.bind(this)
 
     this.refresh()
   }
 
-  refresh(){
-    axios.get(`${URL}?sort=creatAt`)
-     .then(resp =>  this.setState({...this.state, description:' ', list: resp.data}))
-  }
+  refresh(description = '') {
+    const search = description ? `&description__regex=/${description}/` : ''
+    axios.get(`${URL}?sort=-createdAt${search}`)
+        .then(resp => this.setState({...this.state, description, list: resp.data}))
+}
+
+handleSearch(e) {
+    e.preventDefault()
+    this.refresh(this.state.description)
+}
 
   handleAdd(e) {
-    e.preventDefault();
+    e.preventDefault()
     const description = this.state.description
     axios.post(URL,{description})
       .then(resp =>  this.refresh())
-      .then(resp => console.log('não e que deu certo'))
   }
 
-  handleRemove( task) {
+  handleRemove(task) {
     axios.delete(`${URL}/${task._id}`)
-      
-      .then(resp => this.refresh())
+      .then(resp => this.refresh(this.state.description))
   }
 
   handleMarkAsDone(task){
     axios.put(`${URL}/${task._id}`, {...task, done: true })
-      .then(resp => this.refresh())
-
+      .then(resp => this.refresh(this.state.description))
   }
 
   handleMarkAsPending(task){
-    axios.put(`${URL}/${task._id}`, {...task, done: true })
-      .then(resp => this.refresh())
+    axios.put(`${URL}/${task._id}`, {...task, done: false })
+    .then(resp => this.refresh(this.state.description ))
   }
 
   handOnChange(e) {
     this.setState({ ...this.state, description: e.target.value })
     
   }
- 
+
+  handleClear() {
+    this.refresh()
+    
+  }
+
+
   render() {
     return (
       <>
-      {console.log(this.state.description)}
         <Header name="Tarefas" small="cadastro" />
         <Form description={this.state.description}
           handOnChange={this.handOnChange}
           handleAdd={this.handleAdd} 
+          handleSearch={this.handleSearch}
           placeholder={this.state.placeholder}/>
-          <TaskList list={this.state.list} handleRemove={this.handleRemove} handleMarkAsDone={this.handleMarkAsDone} handleMarkAsPending={this.handleMarkAsPending} />
+
+          <TaskList list={this.state.list} 
+          handleRemove={this.handleRemove} 
+          handleMarkAsDone={this.handleMarkAsDone} 
+          handleMarkAsPending={this.handleMarkAsPending} />
       </>
     )
   }

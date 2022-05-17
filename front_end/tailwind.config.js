@@ -4,7 +4,11 @@ module.exports = {
   ],
   darkMode: "media",
   theme: {
-    extend: {},
+    extend: {
+      padding: {
+        '0.4': '0.4rem',
+      }
+    },
   },
   plugins: [],
 }
